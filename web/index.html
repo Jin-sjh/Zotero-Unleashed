@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zotero Export Controller</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <h1>Zotero Controller</h1>
+                <span class="badge">v1.0</span>
+            </div>
+            <p class="subtitle">Mirror your Zotero knowledge base to local files.</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Panel: Tree View -->
+            <section class="panel left-panel">
+                <div class="panel-header">
+                    <h2>Collection Structure</h2>
+                </div>
+
+                <div class="control-group">
+                    <label for="root-select">Target Root Collection</label>
+                    <select id="root-select">
+                        <option value="" disabled selected>Loading metadata...</option>
+                    </select>
+                    <small>Select the top-level collection you want to process.</small>
+                </div>
+
+                <div class="tree-wrapper">
+                    <div id="tree-root" class="tree-root">
+                        <!-- Tree Nodes Injected by JS -->
+                        <div class="loading-spinner">Loading Zotero DB...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Actions -->
+            <section class="panel right-panel">
+                <div class="panel-header">
+                    <h2>Actions & Status</h2>
+                </div>
+
+                <div class="card info-card">
+                    <h3>Export Configuration</h3>
+                    <p>Current configuration logic:</p>
+                    <ul>
+                        <li><strong>Checked:</strong> Explicitly included.</li>
+                        <li><strong>Unchecked (Parent):</strong> Still traversed if children are checked.</li>
+                        <li><strong>Unchecked (Leaf):</strong> Excluded.</li>
+                    </ul>
+                    <p class="note">Note: If you select a folder, all its files are exported.</p>
+                </div>
+
+                <div class="card settings-card">
+                    <h3>Export Settings</h3>
+                    <div class="control-group-simple">
+                        <label for="output-path-input">Output Root Directory</label>
+                        <div class="path-input-group">
+                            <input type="text" id="output-path-input" placeholder="e.g. C:\MyExports">
+                            <button type="button" id="browse-folder-btn" class="btn-browse">📁 Browse</button>
+                        </div>
+                        <small>Files will be mirrored here. This overrides .env settings.</small>
+                    </div>
+                </div>
+
+                <div class="actions-footer">
+                    <button id="btn-export" class="btn btn-primary">
+                        <span class="icon">🚀</span> Start Export
+                    </button>
+                    <div id="status-area" class="status-area">
+                        <span id="status-text">Ready to start.</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

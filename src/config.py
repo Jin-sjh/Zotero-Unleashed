@@ -18,6 +18,9 @@ class ZoteroConfig:
     # 默认导出的分类名称
     default_collection: str = os.getenv("DEFAULT_COLLECTION", "")
 
+    # 配置来源: 'backend' or 'frontend'
+    config_source: str = os.getenv("CONFIG_SOURCE", "backend")
+
     # 数据库路径 (自动推导)
     @property
     def db_path(self):

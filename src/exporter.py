@@ -13,13 +13,16 @@ class MirrorExporter:
         self.config = ConfigManager.get_instance()
         self.db = ZoteroDB(self.config.db_path)
         
-    def export_collection(self, top_collection_name):
+    def export_collection(self, top_collection_name, path_mask=None):
         """
         入口点：导出指定名称的 Collection 及其子 Collection
+        path_mask: Optional dict representing the allowed path structure (from frontend config)
         """
         logging.info(f"Starting export for collection: {top_collection_name}")
         logging.info(f"DB Path: {self.config.db_path}")
         logging.info(f"Output Root: {self.config.output_root}")
+        if path_mask is not None:
+             logging.info("Using frontend configuration mask.")
         
         # 1. 获取所有 Collection 构建树
         all_collections = self.db.get_all_collections()
@@ -40,22 +43,43 @@ class MirrorExporter:
             return
             
         # 3. 递归处理
-        self._process_collection(root_col, [], children_map)
+        self._process_collection(root_col, [], children_map, path_mask=path_mask)
         logging.info("Export completed.")
 
-    def _process_collection(self, current_col, path_stack, children_map):
+    def _process_collection(self, current_col, path_stack, children_map, path_mask=None):
         """
         current_col: 当前处理的 Collection 字典
         path_stack:  当前 Collection 在输出目录中的相对路径层级 (不包含 Category)
                      例如: ['My Thesis', 'Chapter 1']
         children_map: 树结构
+        path_mask:    Configuration mask for this level. 
+                      None -> Export all.
+                      {}   -> Leaf in config, export all.
+                      dict -> Filter children.
         """
         col_name = sanitize_filename(current_col['collectionName'])
         new_stack = path_stack + [col_name]
         
+        # Determine if we should filter children
+        # If path_mask is None, we are in unrestricted mode (Backend mode or below a Leaf).
+        # If path_mask is empty {}, we are at a Leaf in Frontend config -> Switch to unrestricted.
+        # If path_mask has items, we restrict children.
+        
+        filter_children = False
+        child_mask_map = None
+        
+        if path_mask is not None:
+            if not path_mask: 
+                # Empty dict means Leaf -> Treat as "All" from here on
+                path_mask = None 
+            else:
+                # Has entries -> Filter mode
+                filter_children = True
+                child_mask_map = path_mask
+
         logging.info(f"Processing collection: {'/'.join(new_stack)}")
         
-        # A. 处理当前 Collection 下的文件
+        # A. 处理当前 Collection 下的文件 (Always export files if we reached here)
         items = self.db.get_collection_items(current_col['collectionID'])
         for item in items:
             self._process_item(item, new_stack)
@@ -64,7 +88,32 @@ class MirrorExporter:
         col_id = current_col['collectionID']
         if col_id in children_map:
             for child in children_map[col_id]:
-                self._process_collection(child, new_stack, children_map)
+                child_name_raw = child['collectionName']
+                # Important: Frontend directories match sanitized or raw names? 
+                # Usually we should match the name on disk of frontend config.
+                # Assuming frontend folders are named same as Zotero collection names (sanitized?).
+                # Let's assume user names frontend folders exactly as they appear in Zotero, 
+                # but filesystem might enforce sanitization. 
+                # For safety, let's try to match against raw name first, then sanitized?
+                # Actually, `os.scandir` gave us filenames on disk.
+                # `sanitize_filename` is what we use for *Output*.
+                # The frontend folder should probably match the *Output* folder structure to be intuitive.
+                # So we should check `sanitize_filename(child_name_raw)` against `child_mask_map`.
+                
+                child_name_sanitized = sanitize_filename(child_name_raw)
+                
+                next_mask = None
+                should_process_child = True
+                
+                if filter_children:
+                    # We are filtering. Check if child is in mask.
+                    if child_name_sanitized in child_mask_map:
+                        next_mask = child_mask_map[child_name_sanitized]
+                    else:
+                        should_process_child = False
+                
+                if should_process_child:
+                    self._process_collection(child, new_stack, children_map, path_mask=next_mask)
 
     def _process_item(self, item, path_stack):
         """
