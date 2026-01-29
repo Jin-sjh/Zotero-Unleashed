@@ -2,6 +2,7 @@
 > **Set your files free.** | 释放你的文献，重塑知识秩序。
 
 <div align="center">
+
 ![GitHub Release](https://img.shields.io/github/v/release/Jin-sjh/Zotero-Unleashed?style=flat-square&color=blueviolet)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Jin-sjh/Zotero-Unleashed/total?style=flat-square&color=success)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Jin-sjh/Zotero-Unleashed?style=flat-square&logo=github)
