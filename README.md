@@ -2,7 +2,6 @@
 > **Set your files free.** | 释放你的文献，重塑知识秩序。
 
 <div align="center">
-
 ![GitHub Release](https://img.shields.io/github/v/release/Jin-sjh/Zotero-Unleashed?style=flat-square&color=blueviolet)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Jin-sjh/Zotero-Unleashed/total?style=flat-square&color=success)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Jin-sjh/Zotero-Unleashed?style=flat-square&logo=github)
@@ -11,7 +10,7 @@
 
 </div>
 
-<img width="1024" height="400" alt="Image" src="https://github.com/user-attachments/assets/3a037f19-e444-4fb1-9432-2270bc480d7f" />
+<img width="824" height="450" alt="Image" src="https://github.com/user-attachments/assets/3a037f19-e444-4fb1-9432-2270bc480d7f" />
 
 `Zotero Unleashed` 不仅仅是一个导出工具，它是你本地知识库的解放者。它打破 Zotero 数据库的黑盒限制，将你的科研文献以 **1:1 完美镜像** 的形式映射到本地硬盘，构建一个**清晰、有序、自由**的文件帝国。
 
