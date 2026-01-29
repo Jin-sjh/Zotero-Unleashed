@@ -11,7 +11,7 @@
 
 </div>
 
-<img width="1024" height="829" alt="Image" src="https://github.com/user-attachments/assets/3a037f19-e444-4fb1-9432-2270bc480d7f" />
+<img width="1024" height="400" alt="Image" src="https://github.com/user-attachments/assets/3a037f19-e444-4fb1-9432-2270bc480d7f" />
 
 `Zotero Unleashed` 不仅仅是一个导出工具，它是你本地知识库的解放者。它打破 Zotero 数据库的黑盒限制，将你的科研文献以 **1:1 完美镜像** 的形式映射到本地硬盘，构建一个**清晰、有序、自由**的文件帝国。
 
