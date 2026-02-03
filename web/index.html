@@ -17,68 +17,141 @@
                 <span class="badge">v1.0</span>
             </div>
             <p class="subtitle">Mirror your Zotero knowledge base to local files.</p>
+                    
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button id="export-tab-btn" class="tab-btn active" data-tab="export">Export Manager</button>
+                <button id="ai-tab-btn" class="tab-btn" data-tab="ai">AI Literature Organization</button>
+            </div>
         </header>
-
+        
         <main class="main-content">
-            <!-- Left Panel: Tree View -->
-            <section class="panel left-panel">
-                <div class="panel-header">
-                    <h2>Collection Structure</h2>
-                </div>
-
-                <div class="control-group">
-                    <label for="root-select">Target Root Collection</label>
-                    <select id="root-select">
-                        <option value="" disabled selected>Loading metadata...</option>
-                    </select>
-                    <small>Select the top-level collection you want to process.</small>
-                </div>
-
-                <div class="tree-wrapper">
-                    <div id="tree-root" class="tree-root">
-                        <!-- Tree Nodes Injected by JS -->
-                        <div class="loading-spinner">Loading Zotero DB...</div>
+            <!-- Export Manager View -->
+            <section id="export-view" class="view-section active">
+                <!-- Left Panel: Tree View -->
+                <section class="panel left-panel">
+                    <div class="panel-header">
+                        <h2>Collection Structure</h2>
                     </div>
-                </div>
-            </section>
-
-            <!-- Right Panel: Actions -->
-            <section class="panel right-panel">
-                <div class="panel-header">
-                    <h2>Actions & Status</h2>
-                </div>
-
-                <div class="card info-card">
-                    <h3>Export Configuration</h3>
-                    <p>Current configuration logic:</p>
-                    <ul>
-                        <li><strong>Checked:</strong> Explicitly included.</li>
-                        <li><strong>Unchecked (Parent):</strong> Still traversed if children are checked.</li>
-                        <li><strong>Unchecked (Leaf):</strong> Excluded.</li>
-                    </ul>
-                    <p class="note">Note: If you select a folder, all its files are exported.</p>
-                </div>
-
-                <div class="card settings-card">
-                    <h3>Export Settings</h3>
-                    <div class="control-group-simple">
-                        <label for="output-path-input">Output Root Directory</label>
-                        <div class="path-input-group">
-                            <input type="text" id="output-path-input" placeholder="e.g. C:\MyExports">
-                            <button type="button" id="browse-folder-btn" class="btn-browse">📁 Browse</button>
+        
+                    <div class="control-group">
+                        <label for="root-select">Target Root Collection</label>
+                        <select id="root-select">
+                            <option value="" disabled selected>Loading metadata...</option>
+                        </select>
+                        <small>Select the top-level collection you want to process.</small>
+                    </div>
+        
+                    <div class="tree-wrapper">
+                        <div id="tree-root" class="tree-root">
+                            <!-- Tree Nodes Injected by JS -->
+                            <div class="loading-spinner">Loading Zotero DB...</div>
                         </div>
-                        <small>Files will be mirrored here. This overrides .env settings.</small>
                     </div>
-                </div>
-
-                <div class="actions-footer">
-                    <button id="btn-export" class="btn btn-primary">
-                        <span class="icon">🚀</span> Start Export
-                    </button>
-                    <div id="status-area" class="status-area">
-                        <span id="status-text">Ready to start.</span>
+                </section>
+        
+                <!-- Right Panel: Actions -->
+                <section class="panel right-panel">
+                    <div class="panel-header">
+                        <h2>Actions & Status</h2>
                     </div>
-                </div>
+        
+                    <div class="card info-card">
+                        <h3>Export Configuration</h3>
+                        <p>Current configuration logic:</p>
+                        <ul>
+                            <li><strong>Checked:</strong> Explicitly included.</li>
+                            <li><strong>Unchecked (Parent):</strong> Still traversed if children are checked.</li>
+                            <li><strong>Unchecked (Leaf):</strong> Excluded.</li>
+                        </ul>
+                        <p class="note">Note: If you select a folder, all its files are exported.</p>
+                    </div>
+        
+                    <div class="card settings-card">
+                        <h3>Export Settings</h3>
+                        <div class="control-group-simple">
+                            <label for="output-path-input">Output Root Directory</label>
+                            <div class="path-input-group">
+                                <input type="text" id="output-path-input" placeholder="e.g. C:\\MyExports">
+                                <button type="button" id="browse-folder-btn" class="btn-browse">📁 Browse</button>
+                            </div>
+                            <small>Files will be mirrored here. This overrides .env settings.</small>
+                        </div>
+                    </div>
+        
+                    <div class="actions-footer">
+                        <button id="btn-export" class="btn btn-primary">
+                            <span class="icon">🚀</span> Start Export
+                        </button>
+                        <div id="status-area" class="status-area">
+                            <span id="status-text">Ready to start.</span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+                    
+            <!-- AI Literature Organization View -->
+            <section id="ai-view" class="view-section">
+                <section class="panel full-panel">
+                    <div class="panel-header">
+                        <h2>AI Literature Organization</h2>
+                    </div>
+                            
+                    <div class="ai-content">
+                        <div class="card ai-actions-card">
+                            <div class="control-group">
+                                <label for="ai-function-select">AI Function</label>
+                                <select id="ai-function-select">
+                                    <option value="auto-tag">Auto Tag Literature</option>
+                                    <option value="classify-field">Classify by Research Field</option>
+                                    <option value="duplicate-detection">Detect Duplicates</option>
+                                    <option value="content-cluster">Cluster Content</option>
+                                    <option value="batch-process">Batch Process Multiple Tasks</option>
+                                </select>
+                            </div>
+                                    
+                            <div id="ai-options-container" class="control-group">
+                                <label>Options</label>
+                                <div class="ai-options">
+                                    <div id="threshold-option" class="option-item">
+                                        <label for="similarity-threshold">Similarity Threshold (for duplicate detection):</label>
+                                        <input type="range" id="similarity-threshold" min="0" max="1" step="0.05" value="0.8">
+                                        <span id="threshold-value">0.8</span>
+                                    </div>
+                                    <div id="algorithm-option" class="option-item">
+                                        <label for="clustering-algorithm">Clustering Algorithm:</label>
+                                        <select id="clustering-algorithm">
+                                            <option value="kmeans">K-Means</option>
+                                            <option value="hierarchical">Hierarchical</option>
+                                            <option value="dbscan">DBSCAN</option>
+                                        </select>
+                                    </div>
+                                    <div id="batch-tasks-option" class="option-item">
+                                        <label>Select Batch Tasks:</label>
+                                        <div class="checkbox-group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="batch-auto-tag" value="auto-tag"> Auto Tag
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="batch-classify-field" value="classify-field"> Classify Field
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="batch-duplicate-detection" value="duplicate-detection"> Duplicate Detection
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="batch-content-cluster" value="content-cluster"> Content Cluster
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                    
+                            <button id="btn-run-ai" class="btn btn-primary">
+                                <span class="icon">🤖</span> Run AI Function
+                            </button>
+                        </div>
+                    </div>
+                </section>
             </section>
         </main>
     </div>

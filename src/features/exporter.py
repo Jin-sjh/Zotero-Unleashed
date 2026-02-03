@@ -1,9 +1,9 @@
 import os
 import shutil
 import logging
-from .config import ConfigManager
-from .db_connector import ZoteroDB
-from .utils import sanitize_filename, get_file_category, safe_path_join
+from ..core.config import ConfigManager
+from ..core.db_connector import ZoteroDB
+from ..utils.utils import sanitize_filename, get_file_category, safe_path_join
 
 # Set up simple logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')

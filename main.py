@@ -1,6 +1,6 @@
 import argparse
-from src.config import ConfigManager
-from src.exporter import MirrorExporter
+from src.core.config import ConfigManager
+from src.features.exporter import MirrorExporter
 
 def start_web_server():
     import uvicorn
@@ -10,7 +10,7 @@ def start_web_server():
     sys.path.append(os.getcwd())
     print("Starting Zotero Controller Web UI...")
     print("Open your browser at: http://127.0.0.1:8000")
-    uvicorn.run("src.server:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run("src.web.server:app", host="127.0.0.1", port=8000, reload=False)
 
 def main():
     config = ConfigManager.get_instance()

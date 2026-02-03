@@ -36,6 +36,18 @@ class ZoteroConfig:
         "PDF": [".pdf"],
         "Word": [".doc", ".docx"],
     })
+    
+    # AI配置选项
+    ai_config: dict = field(default_factory=lambda: {
+        'model_type': os.getenv("AI_MODEL_TYPE", 'local'),  # 'local' 或 'openai'
+        'local_model': os.getenv("LOCAL_AI_MODEL", 'all-MiniLM-L6-v2'),
+        'similarity_threshold': float(os.getenv("SIMILARITY_THRESHOLD", '0.8')),
+        'max_batch_size': int(os.getenv("MAX_BATCH_SIZE", '100')),
+        'api_key': os.getenv("OPENAI_API_KEY"),
+        'base_url': os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        'enable_cache': os.getenv("AI_ENABLE_CACHE", 'true').lower() == 'true',
+        'cache_ttl': int(os.getenv("AI_CACHE_TTL", '3600'))  # Cache TTL in seconds
+    })
 
 class ConfigManager:
     _instance = None

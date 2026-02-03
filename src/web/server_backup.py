@@ -10,6 +10,7 @@ import threading
 from .config import ConfigManager
 from .db_connector import ZoteroDB
 from .exporter import MirrorExporter
+from .ai_processor import ai_processor
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

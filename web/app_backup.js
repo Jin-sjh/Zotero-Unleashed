@@ -13,78 +13,10 @@ const elStatusText = document.getElementById('status-text');
 const elOutputPathInput = document.getElementById('output-path-input');
 const elBrowseFolderBtn = document.getElementById('browse-folder-btn');
 
-// AI Function Elements
-const elAIFunctionSelect = document.getElementById('ai-function-select');
-const elBtnRunAI = document.getElementById('btn-run-ai');
-const elThresholdSlider = document.getElementById('similarity-threshold');
-const elThresholdValue = document.getElementById('threshold-value');
-const elClusteringAlgorithm = document.getElementById('clustering-algorithm');
-const elBatchTasksOption = document.getElementById('batch-tasks-option');
-const elAIOptionsContainer = document.getElementById('ai-options-container');
-
-// Tab Navigation Elements
-const elExportTabBtn = document.getElementById('export-tab-btn');
-const elAITabBtn = document.getElementById('ai-tab-btn');
-const elExportView = document.getElementById('export-view');
-const elAIView = document.getElementById('ai-view');
-
-// Batch task checkboxes
-const elBatchAutoTag = document.getElementById('batch-auto-tag');
-const elBatchClassifyField = document.getElementById('batch-classify-field');
-const elBatchDuplicateDetection = document.getElementById('batch-duplicate-detection');
-const elBatchContentCluster = document.getElementById('batch-content-cluster');
-
 // Init
 document.addEventListener('DOMContentLoaded', async () => {
     await fetchData();
-    setupEventListeners();
 });
-
-function setupEventListeners() {
-    // AI function selector
-    elAIFunctionSelect.addEventListener('change', handleAIFunctionChange);
-    
-    // Threshold slider
-    elThresholdSlider.addEventListener('input', () => {
-        elThresholdValue.textContent = parseFloat(elThresholdSlider.value).toFixed(2);
-    });
-    
-    // Run AI button
-    elBtnRunAI.addEventListener('click', runAIAction);
-    
-    // Tab Navigation Events
-    elExportTabBtn?.addEventListener('click', () => {
-        switchToTab('export');
-    });
-    
-    elAITabBtn?.addEventListener('click', () => {
-        switchToTab('ai');
-    });
-}
-
-function switchToTab(tabName) {
-    // Update active tab buttons
-    elExportTabBtn.classList.toggle('active', tabName === 'export');
-    elAITabBtn.classList.toggle('active', tabName === 'ai');
-    
-    // Show appropriate view
-    elExportView.classList.toggle('active', tabName === 'export');
-    elAIView.classList.toggle('active', tabName === 'ai');
-}
-
-function handleAIFunctionChange() {
-    const selectedFunction = elAIFunctionSelect.value;
-    
-    // Show/hide relevant options
-    document.getElementById('threshold-option').style.display = 
-        (selectedFunction === 'duplicate-detection' || selectedFunction === 'batch-process') ? 'block' : 'none';
-    
-    document.getElementById('algorithm-option').style.display = 
-        (selectedFunction === 'content-cluster' || selectedFunction === 'batch-process') ? 'block' : 'none';
-    
-    document.getElementById('batch-tasks-option').style.display = 
-        selectedFunction === 'batch-process' ? 'block' : 'none';
-}
 
 async function fetchData() {
     try {
@@ -362,6 +294,10 @@ elBtnExport.addEventListener('click', async () => {
         // We want Export Selection.
         // If Selection is Empty, we likely want Export Nothing (or user error).
 
+        // Wait. if user unchecks everything, mask is `{}`.
+        // Backend treats `{}` as "Export All".
+        // This is counter-intuitive for a Checkbox UI.
+
         // Solution:
         // Use a Magic Key or Flag to indicate "Empty Filter"? 
         // Or simply: Do not call export if nothing selected?
@@ -426,112 +362,3 @@ elBrowseFolderBtn.addEventListener('click', async () => {
         elBrowseFolderBtn.textContent = '📁 Browse';
     }
 });
-
-// --- AI Function Logic ---
-
-async function runAIAction() {
-    const rootId = elRootSelect.value;
-    if (!rootId) {
-        alert("Please select a Root Collection first.");
-        return;
-    }
-    
-    const selectedFunction = elAIFunctionSelect.value;
-    const rootNode = collectionMap[rootId];
-    
-    elStatusText.textContent = `Running ${selectedFunction}...`;
-    elBtnRunAI.disabled = true;
-    
-    try {
-        let payload = {
-            collection_id: rootId,
-            options: {}
-        };
-        
-        // Add function-specific options
-        if (selectedFunction === 'duplicate-detection' || selectedFunction === 'batch-process') {
-            payload.options.threshold = parseFloat(elThresholdSlider.value);
-        }
-        
-        if (selectedFunction === 'content-cluster' || selectedFunction === 'batch-process') {
-            payload.options.algorithm = elClusteringAlgorithm.value;
-        }
-        
-        if (selectedFunction === 'batch-process') {
-            // Collect selected batch tasks
-            const batchTasks = [];
-            if (elBatchAutoTag.checked) batchTasks.push('auto-tag');
-            if (elBatchClassifyField.checked) batchTasks.push('classify-field');
-            if (elBatchDuplicateDetection.checked) batchTasks.push('duplicate-detection');
-            if (elBatchContentCluster.checked) batchTasks.push('content-cluster');
-            
-            if (batchTasks.length === 0) {
-                alert("Please select at least one task for batch processing.");
-                return;
-            }
-            
-            payload.tasks = batchTasks;
-        }
-        
-        let endpoint;
-        switch(selectedFunction) {
-            case 'auto-tag':
-                endpoint = `${API_URL}/ai/auto-tag`;
-                break;
-            case 'classify-field':
-                endpoint = `${API_URL}/ai/classify-field`;
-                break;
-            case 'duplicate-detection':
-                endpoint = `${API_URL}/ai/duplicate-detection`;
-                break;
-            case 'content-cluster':
-                endpoint = `${API_URL}/ai/content-cluster`;
-                break;
-            case 'batch-process':
-                endpoint = `${API_URL}/ai/process-batch`;
-                break;
-            default:
-                throw new Error(`Unknown AI function: ${selectedFunction}`);
-        }
-        
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        const result = await res.json();
-        
-        if (res.ok) {
-            elStatusText.textContent = `✅ ${selectedFunction} completed successfully!`;
-            elStatusText.className = "status-text success";
-            
-            // Log detailed results to console for user inspection
-            console.log(`AI ${selectedFunction} results:`, result);
-            
-            // Display summary based on function type
-            if (result.results) {
-                if (selectedFunction === 'duplicate-detection') {
-                    const duplicateCount = result.results.duplicate_pairs || 0;
-                    elStatusText.textContent += ` Found ${duplicateCount} potential duplicates.`;
-                } else if (selectedFunction === 'content-cluster') {
-                    const clusterCount = result.results.total_clusters || 0;
-                    const itemCount = result.results.total_items || 0;
-                    elStatusText.textContent += ` Created ${clusterCount} clusters from ${itemCount} items.`;
-                } else if (selectedFunction === 'batch-process') {
-                    elStatusText.textContent += ` Processed ${Object.keys(result.results).length} different tasks.`;
-                } else {
-                    const processedCount = result.results.processed_count || 0;
-                    elStatusText.textContent += ` Processed ${processedCount} items.`;
-                }
-            }
-        } else {
-            throw new Error(result.detail || "AI operation failed");
-        }
-    } catch (e) {
-        elStatusText.textContent = `❌ ${e.message}`;
-        elStatusText.className = "status-text error";
-    } finally {
-        elBtnRunAI.disabled = false;
-    }
-}
